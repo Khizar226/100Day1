@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100 Day Trading Challenge</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <!-- AUTH MODAL -->
+    <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
+        <div class="bg-slate-800 p-8 rounded-xl border border-slate-600 max-w-md w-full shadow-2xl">
+            <h2 class="text-2xl font-bold text-emerald-400 mb-2 text-center" id="authTitle">Welcome to Trading Challenge</h2>
+            <p class="text-slate-400 mb-6 text-sm text-center" id="authSubtitle">Please sign up or log in to continue</p>
+            
+            <div id="authForm">
+                <div class="space-y-4">
+                    <div id="nameField" class="hidden">
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Full Name</label>
+                        <input type="text" id="userFullName" class="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:border-emerald-500 focus:outline-none" placeholder="John Doe">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Email Address</label>
+                        <input type="email" id="userEmail" class="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:border-emerald-500 focus:outline-none" placeholder="your@email.com">
+                    </div>
+                    
+                    <div id="passwordField">
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Password</label>
+                        <input type="password" id="userPassword" class="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:border-emerald-500 focus:outline-none" placeholder="••••••••">
+                    </div>
+                    
+                    <div id="confirmPasswordField" class="hidden">
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Confirm Password</label>
+                        <input type="password" id="userConfirmPassword" class="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:border-emerald-500 focus:outline-none" placeholder="••••••••">
+                    </div>
+
+                    <div id="authMessage" class="text-center text-red-400 text-sm my-2 hidden"></div>
+
+                    <button onclick="handleAuth()" id="authButton" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded transition shadow-lg shadow-emerald-900/50">
+                        Continue
+                    </button>
+                    
+                    <div class="text-center mt-4">
+                        <button onclick="toggleAuthMode()" id="toggleAuth" class="text-slate-400 hover:text-slate-300 text-sm">
+                            Don't have an account? Sign up
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div id="profileModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 hidden">
+        <div class="bg-slate-800 p-8 rounded-xl border border-slate-600 max-w-2xl w-full shadow-2xl">
+            <h2 class="text-2xl font-bold text-cyan-400 mb-2"><i class="fas fa-user-circle mr-2"></i>Your Profile</h2>
+            <p class="text-slate-400 mb-6 text-sm">Manage your account and view performance reports</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Profile Info -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-white border-b border-slate-600 pb-2">Account Information</h3>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Full Name</label>
+                        <input type="text" id="profileName" class="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:border-cyan-500 focus:outline-none">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Email Address</label>
+                        <input type="email" id="profileEmail" class="w-full bg-slate-900 border border-slate-600 rounded p-3 text-white focus:border-cyan-500 focus:outline-none" readonly>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Member Since</label>
+                        <input type="text" id="profileJoinDate" class="w-full bg-slate-900 border border-slate-600 rounded p-3 text-slate-400 focus:outline-none" readonly>
+                    </div>
+                </div>
+
+                <!-- Performance Stats -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-white border-b border-slate-600 pb-2">Performance Summary</h3>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-900 p-3 rounded border border-slate-700">
+                            <div class="text-xs text-slate-400">Days Completed</div>
+                            <div class="text-lg font-bold text-emerald-400 mono" id="profileDaysCompleted">0</div>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded border border-slate-700">
+                            <div class="text-xs text-slate-400">Success Rate</div>
+                            <div class="text-lg font-bold text-yellow-400 mono" id="profileSuccessRate">0%</div>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded border border-slate-700">
+                            <div class="text-xs text-slate-400">Total Return</div>
+                            <div class="text-lg font-bold text-cyan-400 mono" id="profileTotalReturn">$0.00</div>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded border border-slate-700">
+                            <div class="text-xs text-slate-400">Avg Daily %</div>
+                            <div class="text-lg font-bold text-purple-400 mono" id="profileAvgDaily">0.0%</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 p-4 rounded border border-slate-700">
+                        <div class="text-xs text-slate-400 mb-2">Challenge Progress</div>
+                        <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
+                            <div id="profileProgressBar" class="bg-gradient-to-r from-cyan-500 to-emerald-500 h-full" style="width: 0%"></div>
+                        </div>
+                        <div class="text-xs text-slate-400 mt-1 text-center" id="profileProgressText">0/100 Days</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3 mt-6 pt-4 border-t border-slate-600">
+                <button onclick="updateProfile()" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded transition">
+                    Update Profile
+                </button>
+                <button onclick="closeProfileModal()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded transition">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETUP MODAL -->
+    <div id="setupModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 hidden">
+        <!-- ... (keep existing setup modal code exactly as before) ... -->
+    </div>
+
+    <!-- DAILY QUIZ MODAL -->
+    <div id="quizModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 hidden">
+        <!-- ... (keep existing quiz modal code exactly as before) ... -->
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="app" class="max-w-7xl mx-auto hidden">
+        
+        <!-- HEADER & ACTIONS -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
+                    100 Day Spot Challenge
+                </h1>
+                <p class="text-slate-400 text-sm mt-1 tracking-wider">
+                    Protocol initialized by <span id="dispUserName" class="font-semibold text-white"></span> (<span id="dispUserAge"></span>)
+                </p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="showProfileModal()" class="px-4 py-2 bg-cyan-900/30 hover:bg-cyan-900/50 text-cyan-400 border border-cyan-900/50 rounded text-sm transition">
+                    <i class="fas fa-user mr-2"></i>Profile
+                </button>
+                <button onclick="exportData()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded text-sm transition border border-slate-600">
+                    <i class="fas fa-file-csv mr-2"></i>Export
+                </button>
+                <button onclick="confirmReset()" class="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-900/50 rounded text-sm transition">
+                    <i class="fas fa-skull mr-2"></i>Reset
+                </button>
+                <button onclick="logout()" class="px-4 py-2 bg-purple-900/30 hover:bg-purple-900/50 text-purple-400 border border-purple-900/50 rounded text-sm transition">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- ... (keep all existing dashboard sections exactly as before) ... -->
+
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="quiz.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
